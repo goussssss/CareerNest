@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>    
+    <title>CareerNest - Share Your Career Journey</title>
+</head>
+<body>
+    <%- include('./partials/nav') %>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="jumbotron bg-light p-5 rounded">
+                    <h1 class="display-4">Welcome to CareerNest</h1>
+                    <p class="lead">Share your career journey, experiences, and insights with others.</p>
+                    <% if (!locals.user) { %>
+                    <hr class="my-4">
+                    <p>Join our community today to share your own career experiences.</p>
+                    <a class="btn btn-primary btn-lg" href="/user/signup" role="button">Sign Up</a>
+                    <% } else { %>
+                    <a class="btn btn-primary btn-lg" href="/blog/add-new" role="button">Share Your Experience</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <% if (blogs.length === 0) { %>
+                <div class="col-12 text-center my-5">
+                    <h3>No posts yet</h3>
+                    <p>Be the first to share your career experience!</p>
+                </div>
+            <% } else { %>
+                <% blogs.forEach(blog => { %>
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <% if (blog.coverImageURL) { %>
+                                <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="<%= blog.title %>" style="height: 200px; object-fit: cover;">
+                            <% } else { %>
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <span class="text-muted">No image</span>
+                                </div>
+                            <% } %>
+                            <div class="card-body">
+                                <h5 class="card-title"><%= blog.title %></h5>
+                                <p class="card-text text-truncate"><%= blog.body.substring(0, 100) %>...</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <img src="<%= blog.createdBy.profileImageURL %>" class="rounded-circle me-2" width="30px" height="30px">
+                                        <small class="text-muted"><%= blog.createdBy.fullName %></small>
+                                    </div>
+                                    <% if (blog.pdfURL) { %>
+                                    <span class="badge bg-info text-dark">PDF</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <%= new Date(blog.createdAt).toLocaleDateString() %>
+                                    </small>
+                                    <a href="/blog/<%= blog._id %>" class="btn btn-sm btn-primary">Read More</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+    </div>
+
+    <%- include('./partials/scripts') %>  
+</body>  
+</html>

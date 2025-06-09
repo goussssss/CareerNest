@@ -1,0 +1,4 @@
+package-lock.json
+*.json
+!package.json
+node_modules/

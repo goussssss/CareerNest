@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>    
+    <title>Edit Experience | CareerNest</title>
+</head>
+<body>
+    <%- include('./partials/nav') %>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+          <div class="col-md-8">     
+            <div class="card">
+              <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Edit Career Post</h3>
+              </div>
+              <div class="card-body">
+                <form action="/blog/update/<%= blog._id %>" method="post" enctype="multipart/form-data">
+                  <!-- Title field -->
+                  <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" value="<%= blog.title %>" aria-describedby="title" required>
+                    <div class="form-text">Give your post a descriptive title</div>
+                  </div>
+                  
+                  <!-- Body field -->
+                  <div class="mb-3">
+                    <label for="body" class="form-label">Body</label>
+                    <textarea class="form-control" id="body" name="body" rows="10" required><%= blog.body %></textarea>
+                    <div class="form-text">Share your career experience and important tips here</div>
+                  </div>
+                  
+                  <!-- Current Cover Image -->
+                  <% if (blog.coverImageURL) { %>
+                  <div class="mb-3">
+                    <label class="form-label">Current Cover Image</label>
+                    <div>
+                      <img src="<%= blog.coverImageURL %>" alt="Current cover image" class="img-thumbnail" style="max-height: 200px;">
+                    </div>
+                  </div>
+                  <% } %>
+                  
+                  <!-- Cover Image field -->
+                  <div class="mb-3">
+                    <label for="coverImage" class="form-label">Update Cover Image</label>
+                    <input class="form-control" type="file" id="coverImage" name="coverImage" aria-describedby="coverImage">
+                    <div class="form-text">Upload a new cover image (leave empty to keep current image)</div>
+                  </div>
+                  
+                  <!-- Current PDF -->
+                  <% if (blog.pdfURL) { %>
+                  <div class="mb-3">
+                    <label class="form-label">Current PDF Document</label>
+                    <div>
+                      <a href="<%= blog.pdfURL %>" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-file-earmark-pdf"></i> View Current PDF
+                      </a>
+                    </div>
+                  </div>
+                  <% } %>
+                  
+                  <!-- PDF file field -->
+                  <div class="mb-3">
+                    <label for="pdfFile" class="form-label">Update PDF Document</label>
+                    <input class="form-control" type="file" id="pdfFile" name="pdfFile" aria-describedby="pdfFile" accept="application/pdf">
+                    <div class="form-text">Upload a new PDF document (leave empty to keep current PDF)</div>
+                  </div>
+                  
+                  <!-- Submit button -->
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Update Post</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <%- include('./partials/scripts') %>  
+</body>  
+</html>
