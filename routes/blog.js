@@ -8,15 +8,15 @@ const Blog = require("../models/blog");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, path.resolve(`./public/uploads/`));
+        cb(null, path.resolve(`./public/uploads/`));
     },
     filename: function (req, file, cb) {
-      const fileName = `${Date.now()}-${file.originalname}`;
-      cb(null, fileName);
+        const fileName = `${Date.now()}-${file.originalname}`;
+        cb(null, fileName);
     },
 });
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
     fileFilter: function (req, file, cb) {
         // Accept images and PDFs
@@ -42,21 +42,21 @@ router.get('/add-new', (req, res) => {
 
 router.post("/", uploadFiles, async (req, res) => {
     const { title, body } = req.body;
-    
+
     const blogData = {
         body,
         title,
         createdBy: req.user._id,
     };
-    
+
     if (req.files.coverImage) {
         blogData.coverImageURL = `/uploads/${req.files.coverImage[0].filename}`;
     }
-    
+
     if (req.files.pdfFile) {
         blogData.pdfURL = `/uploads/${req.files.pdfFile[0].filename}`;
     }
-    
+
     const blog = await Blog.create(blogData);
     return res.redirect(`/blog/${blog._id}`);
 });
@@ -64,32 +64,32 @@ router.post("/", uploadFiles, async (req, res) => {
 router.get("/edit/:id", async (req, res) => {
     try {
         const blog = await Blog.findById(req.params.id);
-        
+
         // Check if blog exists
         if (!blog) {
-            return res.status(404).render('error', { 
+            return res.status(404).render('error', {
                 error: 'Blog not found',
-                user: req.user 
+                user: req.user
             });
         }
-        
+
         // Check if current user is the author
         if (blog.createdBy.toString() !== req.user._id.toString()) {
-            return res.status(403).render('error', { 
+            return res.status(403).render('error', {
                 error: 'You are not authorized to edit this blog',
-                user: req.user 
+                user: req.user
             });
         }
-        
+
         return res.render('editBlog', {
             user: req.user,
             blog,
         });
     } catch (error) {
         console.error(error);
-        return res.status(500).render('error', { 
+        return res.status(500).render('error', {
             error: 'Server error',
-            user: req.user 
+            user: req.user
         });
     }
 });
@@ -98,58 +98,58 @@ router.post("/update/:id", uploadFiles, async (req, res) => {
     try {
         const { title, body } = req.body;
         const blog = await Blog.findById(req.params.id);
-        
+
         // Check if blog exists
         if (!blog) {
-            return res.status(404).render('error', { 
+            return res.status(404).render('error', {
                 error: 'Blog not found',
-                user: req.user 
+                user: req.user
             });
         }
-        
+
         // Check if current user is the author
         if (blog.createdBy.toString() !== req.user._id.toString()) {
-            return res.status(403).render('error', { 
-                error: 'You are not authorized to edit this blog',
-                user: req.user 
+            return res.status(403).render('error', {
+                error: 'Not authorized',
+                user: req.user
             });
         }
-        
-        const updateData = {
-            title,
-            body,
-        };
-        
+
+        // Update blog data
+        blog.title = title;
+        blog.body = body;
+
+        // Handle new cover image if uploaded
         if (req.files.coverImage) {
-            // Delete old image if exists
+            // Delete old cover image if exists
             if (blog.coverImageURL) {
-                const oldImagePath = path.resolve(`./public${blog.coverImageURL}`);
+                const oldImagePath = path.join(__dirname, '../public', blog.coverImageURL);
                 if (fs.existsSync(oldImagePath)) {
                     fs.unlinkSync(oldImagePath);
                 }
             }
-            updateData.coverImageURL = `/uploads/${req.files.coverImage[0].filename}`;
+            blog.coverImageURL = `/uploads/${req.files.coverImage[0].filename}`;
         }
-        
+
+        // Handle new PDF if uploaded
         if (req.files.pdfFile) {
             // Delete old PDF if exists
             if (blog.pdfURL) {
-                const oldPdfPath = path.resolve(`./public${blog.pdfURL}`);
-                if (fs.existsSync(oldPdfPath)) {
-                    fs.unlinkSync(oldPdfPath);
+                const oldPDFPath = path.join(__dirname, '../public', blog.pdfURL);
+                if (fs.existsSync(oldPDFPath)) {
+                    fs.unlinkSync(oldPDFPath);
                 }
             }
-            updateData.pdfURL = `/uploads/${req.files.pdfFile[0].filename}`;
+            blog.pdfURL = `/uploads/${req.files.pdfFile[0].filename}`;
         }
-        
-        await Blog.findByIdAndUpdate(req.params.id, updateData);
-        
-        return res.redirect(`/blog/${req.params.id}`);
+
+        await blog.save();
+        return res.redirect(`/blog/${blog._id}`);
     } catch (error) {
         console.error(error);
-        return res.status(500).render('error', { 
+        return res.status(500).render('error', {
             error: 'Server error',
-            user: req.user 
+            user: req.user
         });
     }
 });
@@ -157,47 +157,46 @@ router.post("/update/:id", uploadFiles, async (req, res) => {
 router.get("/delete/:id", async (req, res) => {
     try {
         const blog = await Blog.findById(req.params.id);
-        
+
         // Check if blog exists
         if (!blog) {
-            return res.status(404).render('error', { 
+            return res.status(404).render('error', {
                 error: 'Blog not found',
-                user: req.user 
+                user: req.user
             });
         }
-        
+
         // Check if current user is the author
         if (blog.createdBy.toString() !== req.user._id.toString()) {
-            return res.status(403).render('error', { 
-                error: 'You are not authorized to delete this blog',
-                user: req.user 
+            return res.status(403).render('error', {
+                error: 'Not authorized',
+                user: req.user
             });
         }
-        
-        // Delete image file if exists
+
+        // Delete associated files
         if (blog.coverImageURL) {
-            const imagePath = path.resolve(`./public${blog.coverImageURL}`);
+            const imagePath = path.join(__dirname, '../public', blog.coverImageURL);
             if (fs.existsSync(imagePath)) {
                 fs.unlinkSync(imagePath);
             }
         }
-        
-        // Delete PDF file if exists
+
         if (blog.pdfURL) {
-            const pdfPath = path.resolve(`./public${blog.pdfURL}`);
+            const pdfPath = path.join(__dirname, '../public', blog.pdfURL);
             if (fs.existsSync(pdfPath)) {
                 fs.unlinkSync(pdfPath);
             }
         }
-        
-        await Blog.findByIdAndDelete(req.params.id);
-        
+
+        // Delete the blog
+        await Blog.deleteOne({ _id: req.params.id });
         return res.redirect('/');
     } catch (error) {
         console.error(error);
-        return res.status(500).render('error', { 
+        return res.status(500).render('error', {
             error: 'Server error',
-            user: req.user 
+            user: req.user
         });
     }
 });

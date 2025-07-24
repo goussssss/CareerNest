@@ -1,100 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <%- include('./partials/head') %>    
-    <title><%= blog.title %> | CareerNest</title>
+    <%- include('./partials/head') %>
+        <title>
+            <%= blog.title %> | CareerNest
+        </title>
 </head>
+
 <body>
     <%- include('./partials/nav') %>
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-8">
-                <h1 class="mb-3"><%= blog.title %></h1>
-                
-                <div class="d-flex align-items-center mb-3">
-                    <img src="<%= blog.createdBy.profileImageURL %>" class="rounded-circle me-2" width="40px" height="40px">
-                    <span class="me-3"><%= blog.createdBy.fullName %></span>
-                    <small class="text-muted">
-                        Posted on <%= new Date(blog.createdAt).toLocaleDateString('en-US', { 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                        }) %>
-                    </small>
-                </div>
-                
-                <% if (locals.user && locals.user._id === blog.createdBy._id.toString()) { %>
-                <div class="mb-4">
-                    <a href="/blog/edit/<%= blog._id %>" class="btn btn-sm btn-primary me-2">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <a href="/blog/delete/<%= blog._id %>" class="btn btn-sm btn-danger" 
-                       onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.')">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
-                </div>
-                <% } %>
-                
-                <% if (blog.coverImageURL) { %>
-                <div class="mb-4">
-                    <img src="<%= blog.coverImageURL %>" class="img-fluid rounded" alt="Cover image">
-                </div>
-                <% } %>
-                
-                <div class="blog-content mb-4">
-                    <pre class="blog-text"><%= blog.body %></pre>
-                </div>
-                
-                <% if (blog.pdfURL) { %>
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Attached Document</h5>
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1 class="mb-3">
+                        <%= blog.title %>
+                    </h1>
+
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="<%= blog.createdBy.profileImageURL %>" class="rounded-circle me-2" width="40px"
+                            height="40px">
+                        <span class="me-3">
+                            <%= blog.createdBy.fullName %>
+                        </span>
+                        <small class="text-muted">
+                            Posted on <%= new Date(blog.createdAt).toLocaleDateString('en-US', { year: 'numeric' ,
+                                month: 'long' , day: 'numeric' }) %>
+                        </small>
                     </div>
-                    <div class="card-body">
-                        <p>This post has an attached PDF document with additional information.</p>
-                        <a href="<%= blog.pdfURL %>" target="_blank" class="btn btn-primary">
-                            <i class="bi bi-file-earmark-pdf"></i> View PDF Document
-                        </a>
-                    </div>
+
+                    <% if (locals.user && locals.user._id===blog.createdBy._id.toString()) { %>
+                        <div class="mb-4">
+                            <a href="/blog/edit/<%= blog._id %>" class="btn btn-sm btn-primary me-2">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <a href="/blog/delete/<%= blog._id %>" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                            onclick="return confirm('Are you sure you want to delete this post? This action cannot be
+                            undone.')">
+                            <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </div>
+                        <% } %>
+
+                            <% if (blog.coverImageURL) { %>
+                                <div class="mb-4">
+                                    <img src="<%= blog.coverImageURL %>" class="img-fluid rounded" alt="Cover image">
+                                </div>
+                                <% } %>
+
+                                    <div class="blog-content mb-4">
+                                        <pre class="blog-text"><%= blog.body %></pre>
+                                    </div>
+
+                                    <% if (blog.pdfURL) { %>
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Attached Document</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <p>This post has an attached PDF document with additional information.
+                                                </p>
+                                                <a href="<%= blog.pdfURL %>" target="_blank" class="btn btn-primary">
+                                                    <i class="bi bi-file-earmark-pdf"></i> View PDF Document
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <% } %>
                 </div>
-                <% } %>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">About Your Senior</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="<%= blog.createdBy.profileImageURL %>" class="rounded-circle me-3" width="64px" height="64px">
-                            <div>
-                                <h5 class="mb-1"><%= blog.createdBy.fullName %></h5>
-                                <p class="text-muted mb-0"><%= blog.createdBy.email %></p>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">About Your Senior</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="<%= blog.createdBy.profileImageURL %>" class="rounded-circle me-3"
+                                    width="64px" height="64px">
+                                <div>
+                                    <h5 class="mb-1">
+                                        <%= blog.createdBy.fullName %>
+                                    </h5>
+                                    <p class="text-muted mb-0">
+                                        <%= blog.createdBy.email %>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <%- include('./partials/scripts') %>
-    
-    <style>
-        .blog-content {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-        }
-        .blog-text {
-            white-space: pre-wrap;
-            font-family: inherit;
-            background: none;
-            border: none;
-            padding: 0;
-            margin: 0;
-            overflow: visible;
-        }
-    </style>
-</body>  
+        <%- include('./partials/scripts') %>
+
+            <style>
+                .blog-content {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    line-height: 1.6;
+                }
+
+                .blog-text {
+                    white-space: pre-wrap;
+                    font-family: inherit;
+                    background: none;
+                    border: none;
+                    padding: 0;
+                    margin: 0;
+                    overflow: visible;
+                }
+            </style>
+</body>
+
 </html>
